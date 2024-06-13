@@ -1,26 +1,30 @@
 from fastapi import FastAPI
 
+from contextlib import asynccontextmanager
+
 # Models import
-from database import Base, engine
-from models.author_model import AuthorModel
-from models.book_model import BookModel
-from models.category_model import CategoryModel
+from app.database import Base, engine
+from app.models.author_model import AuthorModel
+from app.models.book_model import BookModel
+from app.models.category_model import CategoryModel
 
 # routers import
-from routers.category_router import category_router
-
-app = FastAPI()
-
-app.include_router(category_router, prefix="/categories")
+from app.routers.category_router import category_router
 
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(category_router, prefix="/categories")
 
 
 @app.get("/")

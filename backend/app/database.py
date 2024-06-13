@@ -1,8 +1,7 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session, declarative_base
 
 DB_ENGINE = os.environ.get("DB_ENGINE", "postgresql")
 DB_USER = os.environ.get("DB_USER", "fastapi_user")
