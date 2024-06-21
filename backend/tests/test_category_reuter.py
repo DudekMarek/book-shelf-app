@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
+from unittest.mock import MagicMock
 
 from app.main import app
+from app.models.category_model import CategoryModel
 
 client = TestClient(app)
 
@@ -39,12 +41,15 @@ def test_create_category(mock_db_session):
 
 
 def test_update_category(mock_db_session):
-    mock_db_session.query().filter().first.return_value = {"id": 1, "name": "sci-fi"}
+    mock_category = CategoryModel(id=1, name="sci-fi")
+    mock_db_session.query().filter().first.return_value = mock_category
 
     response = client.put("/categories/1", json={"name": "fantasy"})
 
     assert response.status_code == 200
+
     data = response.json()
+    print("Response Text:", data)
     assert data["name"] == "fantasy"
 
     assert mock_db_session.commit.called
